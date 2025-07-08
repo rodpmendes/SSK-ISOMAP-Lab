@@ -117,9 +117,9 @@ def SSKIsomap(dados, k, d, target, prediction_mode="GMM", proportion=0.1, select
         
         # If same class, assign lower weight (closer); otherwise, assign higher weight (farther)
         if self_labels[i] == self_labels[j]:
-            B[i, j] = min(delta)
+            B[i, j] = 0.1 * min(delta)
         else:
-            B[i, j] = max(delta) 
+            B[i, j] = 10 * max(delta) 
             
     # Computes geodesic distances in B
     G = nx.from_numpy_array(B)

@@ -115,12 +115,42 @@ def SSKIsomap(dados, k, d, target, prediction_mode="GMM", proportion=0.1, select
         
         delta = np.linalg.norm(matriz_pcs[i, :, :] - matriz_pcs[j, :, :], axis=0)
         
-        # If same class, assign lower weight (closer); otherwise, assign higher weight (farther)
-        if self_labels[i] == self_labels[j]:
-            B[i, j] = min(delta)
-        else:
-            B[i, j] = max(delta) 
+        
+        
+        ##---
+        # Polynomial scaling parameters
+        alpha = 0.5   # Same class attraction strength
+        gamma = 2.0   # Different class repulsion strength
+        epsilon = 1e-6  # Small value to avoid zero weights
+        min_weight = 1e-6  # Minimum allowed weight to keep graph connected
+
+        for (i, j) in supervised_edges:
+            dist = np.linalg.norm(matriz_pcs[i, :, :] - matriz_pcs[j, :, :], axis=0)
             
+            # Proteção contra valores negativos ou zero
+            dist = np.abs(dist)
+            dist_value_min = max(np.min(dist), epsilon)
+            dist_value_max = max(np.max(dist), epsilon)
+            
+            # Normalização opcional (se quiser, pode comentar se não quiser usar)
+            # max_dist_in_patch = np.max(dist)
+            # if max_dist_in_patch > 0:
+            #     dist_value_min /= max_dist_in_patch
+            #     dist_value_max /= max_dist_in_patch
+
+            # Aplicar a função polinomial com floor para evitar zero
+            if self_labels[i] == self_labels[j]:
+                weight = dist_value_min ** alpha
+                B[i, j] = max(weight, min_weight)
+            else:
+                weight = dist_value_max ** gamma
+                B[i, j] = max(weight, min_weight)
+
+            # Log opcional para debugar (remova depois de validar)
+            # print(f"Edge ({i},{j}): dist_min={dist_value_min:.6f}, dist_max={dist_value_max:.6f}, weight={B[i,j]:.6f}")
+        ##---
+        
+           
     # Computes geodesic distances in B
     G = nx.from_numpy_array(B)
     D = nx.floyd_warshall_numpy(G)  

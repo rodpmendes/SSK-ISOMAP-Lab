@@ -23,6 +23,7 @@ import json
 from sklearn.decomposition import PCA
 from classification_utils import Clustering
 from noise_effects import apply_noise_type
+from sklearn.model_selection import train_test_split
 
 from dr_methods import Isomap
 from dr_methods import KIsomap
@@ -80,14 +81,13 @@ datasets = [
             
             #To perform the experiments according to the article, uncomment the desired sets of datasets
             
-            {"db": skdata.load_digits(), "reduce_samples": False, "percentage":0, "reduce_dim":False, "num_features": 0},
+            # {"db": skdata.fetch_openml(name='iris', version=1, as_frame=True), "reduce_samples": False, "percentage":0, "reduce_dim":False, "num_features": 0},
+            # {"db": skdata.load_digits(), "reduce_samples": False, "percentage":0, "reduce_dim":False, "num_features": 0},
             # {"db": skdata.fetch_openml(name='wine-quality-white', version=1), "reduce_samples": False, "percentage":0, "reduce_dim":False, "num_features": 0},
             # {"db": skdata.fetch_openml(name='wine-quality-red', version=1), "reduce_samples": False, "percentage":0, "reduce_dim":False, "num_features": 0},
             # {"db": skdata.fetch_openml(name='glass', version=1), "reduce_samples": False, "percentage":0, "reduce_dim":False, "num_features": 0},
             # {"db": skdata.fetch_openml(name='ecoli', version=1), "reduce_samples": False, "percentage":0, "reduce_dim":False, "num_features": 0},
             # {"db": skdata.fetch_openml(name='vowel', version=2), "reduce_samples": False, "percentage":0, "reduce_dim":False, "num_features": 0},
-            # {"db": skdata.fetch_openml(name='collins', version=4), "reduce_samples": False, "percentage":0, "reduce_dim":False, "num_features": 0},
-            # {"db": skdata.fetch_openml(name='energy-efficiency', version=1), "reduce_samples": False, "percentage":0, "reduce_dim":False, "num_features": 0},
             # {"db": skdata.fetch_openml(name='balance-scale', version=1), "reduce_samples": False, "percentage":0, "reduce_dim":False, "num_features": 0},
             # {"db": skdata.fetch_openml(name='diabetes', version=1), "reduce_samples": False, "percentage":0, "reduce_dim":False, "num_features": 0},
             # {"db": skdata.fetch_openml(name='mfeat-karhunen', version=1), "reduce_samples": False, "percentage":0, "reduce_dim":False, "num_features": 0},
@@ -96,14 +96,10 @@ datasets = [
             # {"db": skdata.fetch_openml(name='vehicle', version=1), "reduce_samples": False, "percentage":0, "reduce_dim":False, "num_features": 0},
             # {"db": skdata.fetch_openml(name='ionosphere', version=1), "reduce_samples": False, "percentage":0, "reduce_dim":False, "num_features": 0},
             # {"db": skdata.fetch_openml(name='wall-robot-navigation', version=1), "reduce_samples": False, "percentage":0, "reduce_dim":False, "num_features": 0},
-            # {"db": skdata.fetch_openml(name='CIFAR_10_small', version=1), "reduce_samples": True, "percentage":.2, "reduce_dim":False, "num_features": 30},             # 20% of the samples and 30-D
-            # {"db": skdata.fetch_openml(name='artificial-characters', version=1), "reduce_samples": True, "percentage":.25, "reduce_dim":False, "num_features": 0},      # 25% of the samples
             # {"db": skdata.fetch_openml(name='waveform-5000', version=1), "reduce_samples": False, "percentage":0, "reduce_dim":False, "num_features": 0},
             # {"db": skdata.fetch_openml(name='nursery', version=1), "reduce_samples": True, "percentage":.3, "reduce_dim":False, "num_features": 0},                     # 30% of the samples
             # {"db": skdata.fetch_openml(name='eye_movements', version=1), "reduce_samples": True, "percentage":.3, "reduce_dim":False, "num_features": 0},               # 30% of the samples
-            # {"db": skdata.fetch_openml(name='zoo', version=1), "reduce_samples": False, "percentage":0, "reduce_dim":False, "num_features": 0},
             # {"db": skdata.fetch_openml(name='thyroid-dis', version=1), "reduce_samples": False, "percentage":0, "reduce_dim":False, "num_features": 0},
-            # {"db": skdata.fetch_openml(name='one-hundred-plants-shape', version=1), "reduce_samples": False, "percentage":0, "reduce_dim":False, "num_features": 0},
             
             #-------
             # {"db": skdata.fetch_openml(name='servo', version=1), "reduce_samples": False, "percentage":0, "reduce_dim":False, "num_features": 0},
@@ -142,16 +138,18 @@ datasets = [
             # {"db": skdata.fetch_openml(name='oh5.wc', version=1), "reduce_samples": False, "percentage":0, "reduce_dim":True, "num_features": 40},                     # 40-D
             # {"db": skdata.fetch_openml(name='leukemia', version=1), "reduce_samples": False, "percentage":0, "reduce_dim":True, "num_features": 40},                   # 40-D
             # {"db": skdata.fetch_openml(name='pendigits', version=1), "reduce_samples": True, "percentage":.25, "reduce_dim":False, "num_features": 0},                 # 25% of the samples
-            # {"db": skdata.fetch_openml(name='mnist_784', version=1), "reduce_samples": False, "percentage":.5, "reduce_dim":True, "num_features": 50},                 # 50-D and 50% of the samples
-            # {"db": skdata.fetch_openml(name='Fashion-MNIST', version=1), "reduce_samples": False, "percentage":.5, "reduce_dim":True, "num_features": 100},             # 100-D and 50% of the samples
+            {"db": skdata.fetch_openml(name='mnist_784', version=1), "reduce_samples": True, "percentage":.25, "reduce_dim":True, "num_features": 20},                 # 20-D and 25% of the samples
+            {"db": skdata.fetch_openml(name='Fashion-MNIST', version=1), "reduce_samples": True, "percentage":.5, "reduce_dim":True, "num_features": 100},             # 100-D and 50% of the samples
+            
+ 
+            
 ]
 
-plot_results = False
-apply_noise = False    
+apply_noise = True
 
 # Noise parameters
-noise_config = ['none', 'gaussian', 'salt_pepper', 'poison']
-noise_type = noise_config[0]
+noise_config = ['none', 'gaussian', 'salt_pepper', 'poison', 'speckle', 'uniform', 'swap', 'masking']
+noise_type = noise_config[1]
 if apply_noise:
     # Standard deviation (spread or “width”) of the distribution. Must be non-negative
     data_std_dev = 1 # for normalized data base
@@ -239,12 +237,12 @@ for dataset in datasets:
     # Number of neighbors
     nn = round(sqrt(n))     # Número de vizinhos = raiz quadrada de n
     
-    #print()
-    #print('Number of samples (n): ', n)
-    #print('Number of features (m): ', m)
-    #print('Number of classes (c): ', c)
-    #print('Number of Neighbors in k-NN graph (k): ', nn)
-    #print()
+    print()
+    print('Number of samples (n): ', n)
+    print('Number of features (m): ', m)
+    print('Number of classes (c): ', c)
+    print('Number of Neighbors in k-NN graph (k): ', nn)
+    print()
     #print('Press enter to continue...')
     #input()
 
@@ -392,8 +390,7 @@ for dataset in datasets:
             print(dataset_name + ' SSK-ISOMAP result')
             print('---------------')
             model = SSKIsomap(dataset_data, nn, 2, dataset_target)
-            sskiso_data = model.fit_transform(dataset_data)
-            sskiso_data = sskiso_data.T
+            sskiso_data = model.T
             DR_method = 'SSK-ISOMAP ' + dataset_name + ' cluster=' + CLUSTER
             L_sskiso = Clustering(sskiso_data, dataset_target, DR_method, CLUSTER)
             ri_sskiso.append(L_sskiso[0])
@@ -485,14 +482,15 @@ for dataset in datasets:
             
             
             ############## LDA
-            print(dataset_name + ' T-SNE result')
+            print(dataset_name + ' LDA result')
             print('---------------')
             DR_method = 'LDA ' + dataset_name + ' cluster=' + CLUSTER
             if c > 2:
-                model = LinearDiscriminantAnalysis(n_components=2)
+                model = LinearDiscriminantAnalysis(n_components = c-1)
             else:
                 model = LinearDiscriminantAnalysis(n_components=1)
             lda_data = model.fit_transform(dataset_data, dataset_target)
+            lda_data = lda_data.T
             L_lda = Clustering(lda_data, dataset_target, DR_method, CLUSTER)
             ri_lda.append(L_lda[0])
             ch_lda.append(L_lda[1])
@@ -506,8 +504,9 @@ for dataset in datasets:
             print(dataset_name + ' PLS result')
             print('---------------')
             DR_method = 'PLS ' + dataset_name + ' cluster=' + CLUSTER
-            model = PLSRegression(n_components=2)
+            model = PLSRegression(n_components=c-1)
             pls_data = model.fit_transform(dataset_data, y=dataset_target)
+            pls_data = pls_data[0].T
             L_pls = Clustering(pls_data, dataset_target, DR_method, CLUSTER)
             ri_pls.append(L_pls[0])
             ch_pls.append(L_pls[1])
@@ -657,160 +656,4 @@ for dataset in datasets:
             json.dump(results, f)
     except IOError as e:
         print(f"An error occurred while writing to the file: {file_results} - {e}")
-    
-    
-    if plot_results:
-        print('*********************************************')
-        print('******* SUMMARY OF THE RESULTS **************')
-        print('*********************************************')
-        print()
-
-
-        ############## RAW DATA
-        print('RAW DATA result')
-        print('-----------------')
-        L_ = Clustering(raw_data.T, dataset_target, 'RAW DATA', CLUSTER)
-        labels_ = L_[6]
-        #PlotaDados(raw_data.T, labels_, 'RAW DATA')
         
-        
-        ############## Regular ISOMAP 
-        print('ISOMAP result')
-        print('---------------')
-        model = Isomap(n_neighbors=nn, n_components=2)
-        isomap_data = model.fit_transform(dataset_data)
-        isomap_data = isomap_data.T
-        L_iso = Clustering(isomap_data, dataset_target, 'ISOMAP', CLUSTER)
-        labels_iso = L_iso[6]
-        PlotaDados(isomap_data.T, labels_iso, dataset_name + ' ISOMAP')
-        
-        
-        # Find best result in terms of Rand index
-        print('Best K-ISOMAP result in terms of Rand index')
-        print('----------------------------------------------')
-        ri_star = max(enumerate(ri_kiso), key=lambda x: x[1])[0]
-        dados_kiso = KIsomap(dataset_data, nn, 2, ri_star) 
-        L_kiso = Clustering(dados_kiso.T, dataset_target, 'K-ISOMAP', CLUSTER)
-        labels_kiso = L_kiso[6]
-        PlotaDados(dados_kiso, labels_kiso, dataset_name + ' K-ISOMAP RI')
-
-
-        # Find best result in terms of Rand index
-        print('Best K-ISOMAP result in terms of Calinski-Harabasz')
-        print('-----------------------------------------------------')
-        ch_star = max(enumerate(ch_kiso), key=lambda x: x[1])[0]
-        dados_kiso = KIsomap(dataset_data, nn, 2, ch_star) 
-        L_kiso = Clustering(dados_kiso.T, dataset_target, 'K-ISOMAP', CLUSTER)
-        labels_kiso = L_kiso[6]
-        PlotaDados(dados_kiso, labels_kiso, dataset_name + ' K-ISOMAP CH')
-
-
-        # Find best result in terms of Fowlkes Mallows
-        print('Best K-ISOMAP result in terms of Fowlkes Mallows')
-        print('----------------------------------------------')
-        fm_star = max(enumerate(fm_kiso), key=lambda x: x[1])[0]
-        dados_kiso = KIsomap(dataset_data, nn, 2, fm_star) 
-        L_kiso = Clustering(dados_kiso.T, dataset_target, 'K-ISOMAP', CLUSTER)
-        labels_kiso = L_kiso[6]
-        PlotaDados(dados_kiso, labels_kiso, dataset_name + dataset_name + ' K-ISOMAP FM')
-
-
-        # Find best result in terms of V measure
-        print('Best K-ISOMAP result in terms of V measure')
-        print('-----------------------------------------------------')
-        v_star = max(enumerate(v_kiso), key=lambda x: x[1])[0]
-        dados_kiso = KIsomap(dataset_data, nn, 2, v_star) 
-        L_kiso = Clustering(dados_kiso.T, dataset_target, 'K-ISOMAP', CLUSTER)
-        labels_kiso = L_kiso[6]
-        PlotaDados(dados_kiso, labels_kiso, dataset_name + ' K-ISOMAP VS')
-
-
-        ############## SSK-ISOMAP
-        print('SSK-ISOMAP result')
-        print('---------------')
-        model = SSKIsomap(dataset_data, nn, 2, dataset_target)
-        sskiso_data = model.fit_transform(dataset_data)
-        sskiso_data = sskiso_data.T
-        L_sskiso = Clustering(sskiso_data, dataset_target, 'sskiso', CLUSTER)
-        labels_sskiso = L_sskiso[6]
-        PlotaDados(sskiso_data.T, labels_sskiso, dataset_name + ' SSK-ISOMAP')
-        
-
-        ############## UMAP
-        print('UMAP result')
-        print('---------------')
-        model = UMAP(n_components=2)
-        umap_data = model.fit_transform(dataset_data)
-        umap_data = umap_data.T
-        L_umap = Clustering(umap_data, dataset_target, 'UMAP', CLUSTER)
-        labels_umap = L_umap[6]
-        PlotaDados(umap_data.T, labels_umap, dataset_name + ' UMAP')
-        
-        
-        ############## T-SNE
-        print('T-SNE result')
-        print('---------------')
-        model = TSNE(n_components=2)
-        tsne_data = model.fit_transform(dataset_data)
-        tsne_data = tsne_data.T
-        L_tsne = Clustering(tsne_data, dataset_target, 'T-SNE', CLUSTER)
-        labels_tsne = L_tsne[6]
-        PlotaDados(tsne_data.T, labels_tsne, dataset_name + ' T-SNE')
-        
-        
-        ############## LLE LocallyLinearEmbedding
-        print('LLE result')
-        print('---------------')
-        model = LocallyLinearEmbedding(n_components=2)
-        lle_data = model.fit_transform(dataset_data)
-        lle_data = lle_data.T
-        L_lle = Clustering(lle_data, dataset_target, 'LLE', CLUSTER)
-        labels_lle = L_lle[6]
-        PlotaDados(lle_data.T, labels_lle, dataset_name + ' LLE')
-
-
-        ############## SpectralEmbedding
-        print('SpectralEmbedding')
-        print('---------------')
-        model = SpectralEmbedding(n_components=2)
-        se_data = model.fit_transform(dataset_data)
-        se_data = se_data.T
-        L_se = Clustering(se_data, dataset_target, 'SE', CLUSTER)
-        labels_se = L_se[6]
-        PlotaDados(se_data.T, labels_se, dataset_name + ' SE')
-        
-        
-        ############## KernelPCA
-        print('KPCA')
-        print('---------------')
-        model = KernelPCA(n_components=2)
-        kpca_data = model.fit_transform(dataset_data)
-        kpca_data = kpca_data.T
-        L_kpca = Clustering(kpca_data, dataset_target, 'KPCA', CLUSTER)
-        labels_se = L_kpca[6]
-        PlotaDados(kpca_data.T, labels_se, dataset_name + ' KPCA')
-        
-        
-        ############## LDA
-        print('LDA')
-        print('---------------')
-        if c > 2:
-            model = LinearDiscriminantAnalysis(n_components=2)
-        else:
-            model = LinearDiscriminantAnalysis(n_components=1)
-        lda_data = model.fit_transform(dataset_data)
-        lda_data = lda_data.T
-        L_lda = Clustering(lda_data, dataset_target, 'LDA', CLUSTER)
-        labels_se = L_lda[6]
-        PlotaDados(lda_data.T, labels_se, dataset_name + ' LDA')
-
-
-        ############## PLS
-        print('PLS')
-        print('---------------')
-        model = PLSRegression(n_components=2)
-        pls_data = model.fit_transform(dataset_data)
-        pls_data = pls_data.T
-        L_pls = Clustering(pls_data, dataset_target, 'PLS', CLUSTER)
-        labels_se = L_pls[6]
-        PlotaDados(pls_data.T, labels_se, dataset_name + ' PLS')    

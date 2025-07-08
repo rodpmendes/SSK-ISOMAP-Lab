@@ -47,7 +47,6 @@ def select_edges(cov_matrix: np.ndarray, proportion: float, selection_mode: str)
 
     return selected_edges
 
-
 # SSK-ISOMAP implementation
 def SSKIsomap(dados, k, d, target, prediction_mode="GMM", proportion=0.1, selection_mode: str = "betweenness_centrality") -> np.ndarray:
     """
@@ -109,13 +108,12 @@ def SSKIsomap(dados, k, d, target, prediction_mode="GMM", proportion=0.1, select
     self_labels = clustering.predict(prediction_mode, dados, target)
     
     #Semi-Supervised
-    supervised_edges = select_edges(B, proportion, selection_mode)
-    for tup in supervised_edges:
-        i, j = tup
-        
+    selected_edges = select_edges(B, proportion, selection_mode)
+    for tup in selected_edges:
+        i, j = tup[0]
         delta = np.linalg.norm(matriz_pcs[i, :, :] - matriz_pcs[j, :, :], axis=0)
         
-        # If same class, assign lower weight (closer); otherwise, assign higher weight (farther)
+        # Se mesma classe, menor peso (mais próximo); senão, maior peso (mais distante)
         if self_labels[i] == self_labels[j]:
             B[i, j] = min(delta)
         else:

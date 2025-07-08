@@ -119,7 +119,7 @@ def SSKIsomap(dados, k, d, target, prediction_mode="GMM", proportion=0.1, select
         if self_labels[i] == self_labels[j]:
             B[i, j] = min(delta)
         else:
-            B[i, j] = max(delta) 
+            B[i, j] = sum(delta) 
             
     # Computes geodesic distances in B
     G = nx.from_numpy_array(B)
