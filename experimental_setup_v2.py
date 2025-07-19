@@ -172,7 +172,8 @@ def RunExperiments(cfg: ExperimentConfig) -> None:
         nn = round(np.sqrt(n))
         print(f'Running experiments for {dataset_name} | n={n} | m={m} | c={c} | k-NN={nn}')
 
-
+        continue
+    
         # Define metrics to be used
         metrics = ['ri', 'ch', 'fm', 'v', 'dbs', 'ss']
         
@@ -401,8 +402,20 @@ def SetPaperSetup() -> ExperimentConfig:
         datasets=load_paper_datasets(),
         noise_config=NoiseConfig(apply_noise=False, noise_type=NoiseType.NONE, max_std_dev=1.0),
         #file_results='results/json/dataset_results_paper_setup_min_max.json',
-        file_results='results/json/dataset_results_paper_setup_min_max_v2.json',
-#        file_results='results/json/dataset_results_paper_setup.json',
+        #file_results='results/json/dataset_results_paper_setup_min_max_v2.json',
+        #file_results='results/json/dataset_results_paper_setup.json',
+        file_results='results/json/dataset_results_MedMNIST.json',
+    )
+    return cfg
+
+def SetMedMNISTSetup() -> ExperimentConfig:
+    """
+    Creates and returns the paper experimental configuration using lazy loading for datasets.
+    """
+    cfg = ExperimentConfig(
+        datasets=load_medMNIST_datasets(),
+        noise_config=NoiseConfig(apply_noise=False, noise_type=NoiseType.NONE, max_std_dev=1.0),
+        file_results='results/json/dataset_results_MedMNIST.json',
     )
     return cfg
 
@@ -449,8 +462,10 @@ def main():
     #cfg = SetExperimentalSetupSmallNotReduced()
     #cfg = SetExperimentalSetupSSKVariation()
     
-    cfg = SetPaperSetup()
+    #cfg = SetPaperSetup()
     #GenerateOverviewExperimentalConfig(cfg)
+    
+    cfg = SetMedMNISTSetup()
     RunExperiments(cfg)
 
 if __name__ == "__main__":

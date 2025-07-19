@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import List, Optional, Any
 import numpy as np
-
+from MedMNIST.WrappedMedMNIST import WrappedMedMNIST
 
 class NoiseType(Enum):
     """
@@ -64,7 +64,9 @@ class DatasetConfig:
             RuntimeError: If fetching dataset from OpenML fails.
         """
         if self._data is None:
-            if self.data_source.get("builtin", False):
+            if isinstance(self.data_source, WrappedMedMNIST):
+                self._data = self.data_source.data  # Usa o atributo data de WrappedMedMNIST
+            elif self.data_source.get("builtin", False):
                 loader = self.data_source.get("loader")
                 if not callable(loader):
                     raise ValueError(
@@ -348,44 +350,44 @@ def load_paper_datasets() -> List[DatasetConfig]:
     """
     datasets = [
             # ------------------------- without reduction
-            # DatasetConfig(name='hayes-roth', data_source=openml('hayes-roth', version=2)),
-            # DatasetConfig(name='newton_hema', data_source=openml('newton_hema', version=2)),
-            # DatasetConfig(name='iris', data_source=openml('iris')),
-            # DatasetConfig(name='grub-damage', data_source=openml('grub-damage', version=2)),
-            # DatasetConfig(name='servo', data_source=openml('servo')),
-            # DatasetConfig(name='wine', data_source=openml('wine')),
-            # DatasetConfig(name='seeds', data_source=openml('seeds')),
-            # DatasetConfig(name='glass', data_source=openml('glass')),
-            # DatasetConfig(name='conference_attendance', data_source=openml('conference_attendance')),
-            # DatasetConfig(name='prnn_synth', data_source=openml('prnn_synth')),
-            # DatasetConfig(name='heart-statlog', data_source=openml('heart-statlog')),
-            # DatasetConfig(name='heart-h', data_source=openml('heart-h', version=3)),
-            # DatasetConfig(name='cleveland', data_source=openml('cleveland')),
-            # DatasetConfig(name='diggle_table_a2', data_source=openml('diggle_table_a2', version=2)),
-            # DatasetConfig(name='ecoli', data_source=openml('ecoli')),
-            # DatasetConfig(name='Engine1', data_source=openml('Engine1')),
+            DatasetConfig(name='hayes-roth', data_source=openml('hayes-roth', version=2)),
+            DatasetConfig(name='newton_hema', data_source=openml('newton_hema', version=2)),
+            DatasetConfig(name='iris', data_source=openml('iris')),
+            DatasetConfig(name='grub-damage', data_source=openml('grub-damage', version=2)),
+            DatasetConfig(name='servo', data_source=openml('servo')),
+            DatasetConfig(name='wine', data_source=openml('wine')),
+            DatasetConfig(name='seeds', data_source=openml('seeds')),
+            DatasetConfig(name='glass', data_source=openml('glass')),
+            DatasetConfig(name='conference_attendance', data_source=openml('conference_attendance')),
+            DatasetConfig(name='prnn_synth', data_source=openml('prnn_synth')),
+            DatasetConfig(name='heart-statlog', data_source=openml('heart-statlog')),
+            DatasetConfig(name='heart-h', data_source=openml('heart-h', version=3)),
+            DatasetConfig(name='cleveland', data_source=openml('cleveland')),
+            DatasetConfig(name='diggle_table_a2', data_source=openml('diggle_table_a2', version=2)),
+            DatasetConfig(name='ecoli', data_source=openml('ecoli')),
+            DatasetConfig(name='Engine1', data_source=openml('Engine1')),
 
             # # ------------------------- reduce_dim
-            # DatasetConfig(name='leukemia', data_source=openml('leukemia'), reduce_dim=True, num_features=10),
-            # DatasetConfig(name='wisconsin', data_source=openml('wisconsin', version=2), reduce_dim=True, num_features=10),
-            # DatasetConfig(name='fri_c4_250_100', data_source=openml('fri_c4_250_100', version=2), reduce_dim=True, num_features=10),
-            # DatasetConfig(name='AP_Ovary_Lung', data_source=openml('AP_Ovary_Lung'), reduce_dim=True, num_features=10),
-            # DatasetConfig(name='spectf', data_source=openml('spectf'), reduce_dim=True, num_features=10),
-            # DatasetConfig(name='micro-mass', data_source=openml('micro-mass'), reduce_dim=True, num_features=10),
-            # DatasetConfig(name='AP_Endometrium_Breast', data_source=openml('AP_Endometrium_Breast'), reduce_dim=True, num_features=10),
+            DatasetConfig(name='leukemia', data_source=openml('leukemia'), reduce_dim=True, num_features=10),
+            DatasetConfig(name='wisconsin', data_source=openml('wisconsin', version=2), reduce_dim=True, num_features=10),
+            DatasetConfig(name='fri_c4_250_100', data_source=openml('fri_c4_250_100', version=2), reduce_dim=True, num_features=10),
+            DatasetConfig(name='AP_Ovary_Lung', data_source=openml('AP_Ovary_Lung'), reduce_dim=True, num_features=10),
+            DatasetConfig(name='spectf', data_source=openml('spectf'), reduce_dim=True, num_features=10),
+            DatasetConfig(name='micro-mass', data_source=openml('micro-mass'), reduce_dim=True, num_features=10),
+            DatasetConfig(name='AP_Endometrium_Breast', data_source=openml('AP_Endometrium_Breast'), reduce_dim=True, num_features=10),
 
             # # ------------------------- reduce_samples
-            # DatasetConfig(name='balance-scale', data_source=openml('balance-scale'), reduce_samples=True, sample_percentage=0.5),
-            # DatasetConfig(name='breast-w', data_source=openml('breast-w'), reduce_samples=True, sample_percentage=0.45),
-            # DatasetConfig(name='pima-indians-diabetes', data_source=openml('diabetes'), reduce_samples=True, sample_percentage=0.4),
-            # DatasetConfig(name='tic-tac-toe', data_source=openml('tic-tac-toe'), reduce_samples=True, sample_percentage=0.35),
-            # DatasetConfig(name='xd6', data_source=openml('xd6'), reduce_samples=True, sample_percentage=0.35),
-            # DatasetConfig(name='vowel', data_source=openml('vowel', version=2), reduce_samples=True, sample_percentage=0.3),
+            DatasetConfig(name='balance-scale', data_source=openml('balance-scale'), reduce_samples=True, sample_percentage=0.5),
+            DatasetConfig(name='breast-w', data_source=openml('breast-w'), reduce_samples=True, sample_percentage=0.45),
+            DatasetConfig(name='pima-indians-diabetes', data_source=openml('diabetes'), reduce_samples=True, sample_percentage=0.4),
+            DatasetConfig(name='tic-tac-toe', data_source=openml('tic-tac-toe'), reduce_samples=True, sample_percentage=0.35),
+            DatasetConfig(name='xd6', data_source=openml('xd6'), reduce_samples=True, sample_percentage=0.35),
+            DatasetConfig(name='vowel', data_source=openml('vowel', version=2), reduce_samples=True, sample_percentage=0.3),
 
             # # ------------------------- reduce_samples + reduce_dim
-            # DatasetConfig(name='AP_Breast_Kidney', data_source=openml('AP_Breast_Kidney'), reduce_samples=True, sample_percentage=0.5, reduce_dim=True, num_features=10),
-            # DatasetConfig(name='vehicle', data_source=openml('vehicle'), reduce_samples=True, sample_percentage=0.35, reduce_dim=True, num_features=10),
-            ##DatasetConfig(name='oh5.wc', data_source=openml('oh5.wc', version=1, as_frame=False), reduce_samples=True, sample_percentage=0.35, reduce_dim=True, num_features=10),
+            DatasetConfig(name='AP_Breast_Kidney', data_source=openml('AP_Breast_Kidney'), reduce_samples=True, sample_percentage=0.5, reduce_dim=True, num_features=10),
+            DatasetConfig(name='vehicle', data_source=openml('vehicle'), reduce_samples=True, sample_percentage=0.35, reduce_dim=True, num_features=10),
+            #DatasetConfig(name='oh5.wc', data_source=openml('oh5.wc', version=1, as_frame=False), reduce_samples=True, sample_percentage=0.35, reduce_dim=True, num_features=10),
             DatasetConfig(name='eating', data_source=openml('eating'), reduce_samples=True, sample_percentage=0.35, reduce_dim=True, num_features=10),
             DatasetConfig(name='qsar-biodeg', data_source=openml('qsar-biodeg'), reduce_samples=True, sample_percentage=0.3, reduce_dim=True, num_features=10),
             DatasetConfig(name='cnae-9', data_source=openml('cnae-9'), reduce_samples=True, sample_percentage=0.3, reduce_dim=True, num_features=10),
@@ -416,6 +418,26 @@ def load_paper_datasets() -> List[DatasetConfig]:
     ]
 
     return datasets
+
+
+def load_medMNIST_datasets() -> List[DatasetConfig]:
+    """
+    Creates a list containing configurations for compatible MedMNIST datasets (single-label, multi-class) using lazy loading.
+
+    Returns:
+        List[DatasetConfig]: List of dataset configurations for compatible MedMNIST datasets.
+    """
+    datasets = [
+        DatasetConfig(name='pathmnist', data_source=WrappedMedMNIST(name='pathmnist'), reduce_samples=True, sample_percentage=0.0028, reduce_dim=True, num_features=10),
+        DatasetConfig(name='dermamnist', data_source=WrappedMedMNIST(name='dermamnist'), reduce_samples=True, sample_percentage=0.03, reduce_dim=True, num_features=10),
+        DatasetConfig(name='octmnist', data_source=WrappedMedMNIST(name='octmnist'), reduce_samples=True, sample_percentage=0.0027, reduce_dim=True, num_features=10),
+        DatasetConfig(name='bloodmnist', data_source=WrappedMedMNIST(name='bloodmnist'), reduce_samples=True, sample_percentage=0.0176, reduce_dim=True, num_features=10),
+        DatasetConfig(name='tissuemnist', data_source=WrappedMedMNIST(name='tissuemnist'), reduce_samples=True, sample_percentage=0.0013, reduce_dim=True, num_features=10),
+        DatasetConfig(name='organamnist', data_source=WrappedMedMNIST(name='organamnist'), reduce_samples=True, sample_percentage=0.0051, reduce_dim=True, num_features=10),
+        DatasetConfig(name='organcmnist', data_source=WrappedMedMNIST(name='organcmnist'), reduce_samples=True, sample_percentage=0.0127, reduce_dim=True, num_features=10),
+        DatasetConfig(name='organsmnist', data_source=WrappedMedMNIST(name='organsmnist'), reduce_samples=True, sample_percentage=0.0119, reduce_dim=True, num_features=10),
+    ]
+    return datasets
     
 __all__ = [
     "NoiseType",
@@ -431,6 +453,7 @@ __all__ = [
     "load_small_datasets",
     "load_small_datasets_not_reduced",
     "load_paper_datasets",
+    "load_medMNIST_datasets",
     "openml",
     "builtin",
 ]
