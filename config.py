@@ -393,6 +393,20 @@ def load_paper_datasets() -> List[DatasetConfig]:
             DatasetConfig(name='cnae-9', data_source=openml('cnae-9'), reduce_samples=True, sample_percentage=0.3, reduce_dim=True, num_features=10),
 
             
+            # # ------------------------- MedMNIST
+            DatasetConfig(name='pathmnist', data_source=WrappedMedMNIST(name='pathmnist'), reduce_samples=True, sample_percentage=0.0028, reduce_dim=True, num_features=10),
+            DatasetConfig(name='dermamnist', data_source=WrappedMedMNIST(name='dermamnist'), reduce_samples=True, sample_percentage=0.03, reduce_dim=True, num_features=10),
+            DatasetConfig(name='octmnist', data_source=WrappedMedMNIST(name='octmnist'), reduce_samples=True, sample_percentage=0.0027, reduce_dim=True, num_features=10),
+            DatasetConfig(name='bloodmnist', data_source=WrappedMedMNIST(name='bloodmnist'), reduce_samples=True, sample_percentage=0.0176, reduce_dim=True, num_features=10),
+            DatasetConfig(name='tissuemnist', data_source=WrappedMedMNIST(name='tissuemnist'), reduce_samples=True, sample_percentage=0.0013, reduce_dim=True, num_features=10),
+            DatasetConfig(name='organamnist', data_source=WrappedMedMNIST(name='organamnist'), reduce_samples=True, sample_percentage=0.0051, reduce_dim=True, num_features=10),
+            DatasetConfig(name='organcmnist', data_source=WrappedMedMNIST(name='organcmnist'), reduce_samples=True, sample_percentage=0.0127, reduce_dim=True, num_features=10),
+            DatasetConfig(name='organsmnist', data_source=WrappedMedMNIST(name='organsmnist'), reduce_samples=True, sample_percentage=0.0119, reduce_dim=True, num_features=10),
+            
+            
+            
+            
+            
             # DatasetConfig(name='rabe_131', data_source=openml('rabe_131', version=2)),
             # DatasetConfig(name='zoo', data_source=openml('zoo')),
             # DatasetConfig(name='visualizing_environmental', data_source=openml('visualizing_environmental', version=2)),

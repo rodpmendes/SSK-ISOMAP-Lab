@@ -1,5 +1,5 @@
 """
-    Local Density Weighting
+    Min & Sum Weighting
 """ 
 
 import numpy as np
@@ -9,8 +9,6 @@ import networkx as nx
 import classification_utils as clustering
 import scipy as sp
 from typing import Tuple, List
-
-from graph_utils.graph_visualization import visualize_and_save_graph, visualize_and_save_graph_colors
 
 def select_edges(cov_matrix: np.ndarray, proportion: float, selection_mode: str) -> List[Tuple[int, int]]:
     """
@@ -55,7 +53,7 @@ def select_edges(cov_matrix: np.ndarray, proportion: float, selection_mode: str)
 
 
 # SSK-ISOMAP implementation
-def SSKIsomap(dados, k, d, target, prediction_mode="GMM", proportion=0.1, selection_mode: str = "betweenness_centrality", db_name: str = 'db_name') -> np.ndarray:
+def SSKIsomap(dados, k, d, target, prediction_mode="GMM", proportion=0.1, selection_mode: str = "betweenness_centrality") -> np.ndarray:
     """
     Semi-Supervised K-Isomap using patch-wise tangent spaces and edge reweighting based on network centrality.
 
@@ -121,19 +119,12 @@ def SSKIsomap(dados, k, d, target, prediction_mode="GMM", proportion=0.1, select
         
         delta = np.linalg.norm(matriz_pcs[i, :, :] - matriz_pcs[j, :, :], axis=0)
         
-        # Rescale by local density (Local Density Weighting)
-        # Computes the local density around nodes i and j, then adjusts the weight accordingly
-        local_density_i = len(np.nonzero(B[i])[0])  # Number of neighbors of node i
-        local_density_j = len(np.nonzero(B[j])[0])  # Number of neighbors of node j
-        density_factor = 1 / (local_density_i + local_density_j + 1e-6)  # Small constant to prevent division by zero
-
-        # If same class, assign lower weight based on local density (closer); otherwise, assign higher weight based on local density (farther)
+        # If same class, assign lower weight (closer); otherwise, assign higher weight (farther)
         if self_labels[i] == self_labels[j]:
-            B[i, j] = min(delta) * density_factor
+            B[i, j] = min(delta)
         else:
-            B[i, j] = sum(delta) / density_factor
-
-    visualize_and_save_graph_colors(B, self_labels=self_labels, filename=db_name)    
+            B[i, j] = sum(delta) 
+            
     # Computes geodesic distances in B
     G = nx.from_numpy_array(B)
     D = nx.floyd_warshall_numpy(G)  

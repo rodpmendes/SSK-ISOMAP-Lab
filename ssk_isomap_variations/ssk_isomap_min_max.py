@@ -1,3 +1,7 @@
+"""
+    Min & Max Weighting
+""" 
+
 import numpy as np
 import sklearn.neighbors as sknn
 from numpy.linalg import norm
@@ -119,7 +123,7 @@ def SSKIsomap(dados, k, d, target, prediction_mode="GMM", proportion=0.1, select
         if self_labels[i] == self_labels[j]:
             B[i, j] = min(delta)
         else:
-            B[i, j] = sum(delta) 
+            B[i, j] = max(delta) 
             
     # Computes geodesic distances in B
     G = nx.from_numpy_array(B)

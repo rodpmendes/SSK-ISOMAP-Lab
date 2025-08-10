@@ -76,7 +76,9 @@ def json_to_csv(json_path, output_dir, output_filename="metrics.csv"):
         writer.writerows(rows)
 
 if __name__ == "__main__":
-    file = 'dataset_results_paper_setup_min_max_v2'
-    json_file = 'results/' + file + '.json'
+    #file = 'dataset_results_paper_setup_min_max_v2'
+    #file = 'dataset_results_MedMNIST'
+    file = 'dataset_results_paper_setup_min_sum'
+    json_file = 'results/json/' + file + '.json'
     output_directory = "results/csv"
     json_to_csv(json_file, output_directory, file + '.csv')
